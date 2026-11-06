@@ -1,6 +1,7 @@
 import json
 import socket
 
+#to send something through a TCP socket we have to format the data in a certain way. This function does that
 def encode_message(message): 
     json_string = json.dumps(message)
     json_string += "\n" #appending the \n to mark end of string. 
@@ -8,16 +9,19 @@ def encode_message(message):
 
     return encoded_message
 
+#since we encode a message, we gotta decode it back to a json dictionary object. 
 def decode_message(data):
     json_string = data.decode("utf-8")
     message = json.loads(json_string)
 
     return message
 
+#actually sends the message. 
 def send_message(connection, message):
     encoded_message = encode_message(message)
     connection.sendall(encoded_message)
 
+#We use this function after sending a message for the response. 
 def receive_message(connection):
     data = b""
 
@@ -31,6 +35,7 @@ def receive_message(connection):
 
     return decode_message(data)
 
+#This combines all the functions above. 
 def send_request(host, port, message):
     with socket.create_connection((host,port), timeout=5)as connection:
         send_message(connection, message)
