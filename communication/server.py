@@ -24,6 +24,9 @@ def start_server(host, port, message_handler):
             thread = threading.Thread(target=handle_connection, args=(connection, message_handler), daemon=True)
             thread.start()
 
+#This is where the thread with the message is handled. 
+#Each node type will need a list of ways they handle different messages and replies in an object called "message handler"
+#and this uses the connection and message handler and the send & recieve message functions from protocol. to enable communicaiton
 def handle_connection(connection, message_handler):
     with connection:
         message = receive_message(connection)

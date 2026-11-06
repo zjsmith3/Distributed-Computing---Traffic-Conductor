@@ -23,11 +23,13 @@ def send_message(connection, message):
 
 #We use this function after sending a message for the response. 
 def receive_message(connection):
+    #data is in bytes.
     data = b""
 
     while not data.endswith(b"\n"): #TCP communication might not send the entire string at once so you loop.
         chunk = connection.recv(1024)
 
+        #little check to make sure the message is complete, which should be in TCP, or something terrible happened.
         if not chunk:
             raise ConnectionError("Connection closed before message completed")
 
@@ -35,7 +37,7 @@ def receive_message(connection):
 
     return decode_message(data)
 
-#This combines all the functions above. 
+#This combines all the functions above essentially. 
 def send_request(host, port, message):
     with socket.create_connection((host,port), timeout=5)as connection:
         send_message(connection, message)
