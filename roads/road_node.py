@@ -108,57 +108,61 @@ class RoadNode:
     def attempt_sending_vehicle(self, vehicle_id, tick):
         #get the vehicle from the list
         with self.lock: 
-            sending_vehicle = self.vehicles[vehicle_id]
+            sending_vehicle = self.vehicles.get[vehicle_id]
 
             if sending_vehicle is None:
                 return
             #IMPORTANT: WE MIGHT NEED TO PASS SOMETHING INTO THIS FUNCTION WHEN IT'S MADE POSSIBLY. 
             next_road_id = sending_vehicle.get_next_road()
-
+            #IMPORTANT: MAKE SURE IT MATCHES WITH LATER VEHICLE IMPLEMENTATION. 
             vehicle_data = sending_vehicle.to_dictionary()
 
-            #if the vehicle is done travleing
-            if next_road_id is None:
-                response = send_request(
-                    self.coordinator_host,
-                    self.coordinator_port,
-                    {
-                        "type": "VEHICLE_COMPLETED",
-                        "vehicle_id": vehicle_id,
-                        "road_id": self.road_id,
-                        "tick": tick
-                    }
-                )
-
-                if response["type"] == "ACKNOWLEDGE":
-                    with self.lock:
-                        self.vehicles.pop(vehicle_id, None)
-
-                return
-
-            #if the road is going to another road, get the next road's contact info essentially
-            next_road_config = self.all_roads_config[next_road_id]
-
-            next_road_host = next_road_config["host"]
-            next_road_port = next_road_config["port"]
-
-            #send the request
+        #if the vehicle is done travleing
+        if next_road_id is None:
             response = send_request(
-                next_road_host,
-                next_road_port,
+                self.coordinator_host,
+                self.coordinator_port,
                 {
-                    "type": "TRANSFER_VEHICLE",
-                    "vehicle": vehicle_data,
+                    "type": "VEHICLE_COMPLETED",
+                    "vehicle_id": vehicle_id,
+                    "road_id": self.road_id,
                     "tick": tick
                 }
             )
 
-            #remove vehicle if the transfer was accepted.
-            if response["type"] == "ACCEPTED":
+            if response["type"] == "ACKNOWLEDGE":
                 with self.lock:
                     self.vehicles.pop(vehicle_id, None)
 
-            # If rejected, do nothing with the vehicle. 
+            return
+
+        #a quick check to make sure the car is trying to go somewhere it can actually go. 
+        if next_road_id not in self.connections:
+            return
+
+        #if the road is going to another road, get the next road's contact info essentially
+        next_road_config = self.road_config_list[next_road_id]
+
+        next_road_host = next_road_config["host"]
+        next_road_port = next_road_config["port"]
+
+        #send the request
+        response = send_request(
+            next_road_host,
+            next_road_port,
+            {
+                "type": "TRANSFER_VEHICLE",
+                "vehicle": vehicle_data,
+                "tick": tick
+            }
+        )
+
+        #remove vehicle if the transfer was accepted.
+        if response["type"] == "ACCEPTED":
+            with self.lock:
+                self.vehicles.pop(vehicle_id, None)
+
+        # If rejected, do nothing with the vehicle. 
 
 
             
