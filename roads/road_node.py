@@ -1,5 +1,6 @@
 import threading
 from communication.protocol import send_request
+from roads.vehicle import Vehicle
 
 class RoadNode:
 
@@ -9,6 +10,8 @@ class RoadNode:
         self.port = road_config["port"]
         self.capacity = road_config["capacity"]
         self.base_travel_ticks = road_config["base_travel_ticks"]
+        self.accident_active = False
+        self.accident_multiplier = 2
         self.connections = road_config["connections"]
 
         #coordinator contact info
@@ -50,7 +53,13 @@ class RoadNode:
                 "road_id": self.road_id,
                 "tick": tick
             }
-
+        elif message_type == "TRANSFER_VEHICLE":
+            return self.receive_vehicle(message)
+        elif message_type == "SPAWN_VEHICLE":
+            return self.spawn_vehicle(message)
+        elif message_type == "SET_ACCIDENT":
+            return self.set_accident(message)
+        
         else:
             return {
                 "type": "ERROR",
@@ -67,6 +76,8 @@ class RoadNode:
                 "connections":self.connections,
                 "current_tick": self.current_tick,
                 "vehicle_count": len(self.vehicles),
+                "accident_active": self.accident_active,
+                "travel_ticks": self.get_travel_ticks(),
             }
         
     def handle_tick(self, tick):
@@ -108,7 +119,7 @@ class RoadNode:
     def attempt_sending_vehicle(self, vehicle_id, tick):
         #get the vehicle from the list
         with self.lock: 
-            sending_vehicle = self.vehicles.get[vehicle_id]
+            sending_vehicle = self.vehicles.get(vehicle_id)
 
             if sending_vehicle is None:
                 return
@@ -164,7 +175,91 @@ class RoadNode:
 
         # If rejected, do nothing with the vehicle. 
 
+    def receive_vehicle(self, message):
+        vehicle_data = message["vehicle"]
+        tick = message["tick"]
 
+        #we grab lock because we don't want to roads seeing a road has space and both sending a car that might make it over capacity.
+        with self.lock:
+            #TODO: CONFIRM THIS METHOD IS WRITTEN
+            vehicle = Vehicle.from_dictionary(vehicle_data)
+
+            #preventing duplicate vehicles
+            if vehicle.vehicle_id in self.vehicles:
+                return {
+                    "type": "ERROR",
+                    "message": "Vehicle already exists on this road"
+                }
             
+            #check to see if the road as room, if not, communicate that road is full. 
+            if len(self.vehicles) >= self.capacity:
+                return {
+                    "type": "REJECTED_FULL",
+                    "road_id": self.road_id,
+                }
 
-    
+            #TODO: CONFIRM THE ARRIVAL METHOD WITH VEHICLE DEVELOPER, this function supposively tells the vehicle it moved.
+            vehicle.advance_route()
+
+            #sets up the vehicle into the vehicles dictionary with the amount of ticks needed to travel. 
+            vehicle.entry_tick = tick
+            vehicle.remaining_ticks = self.get_travel_ticks()
+
+            self.vehicles[vehicle.vehicle_id] = vehicle
+
+            return {
+                "type": "ACCEPTED",
+                "road_id": self.road_id
+            }
+
+    def spawn_vehicle(self, message):
+        vehicle_data = message["vehicle"]
+        tick = message["tick"]
+
+        with self.lock:
+
+            #TODO: CONFIRM THIS METHOD IS WRITTEN
+            vehicle = Vehicle.from_dictionary(vehicle_data)
+
+            #preventing duplicate vehicles
+            if vehicle.vehicle_id in self.vehicles:
+                return {
+                    "type": "ERROR",
+                    "message": "Vehicle already exists on this road"
+                }
+
+            #check to see if the road as room, if not, communicate that road is full. 
+            if len(self.vehicles) >= self.capacity:
+                return {
+                    "type": "REJECTED_FULL",
+                    "road_id": self.road_id,
+                }
+
+            #sets up the vehicle into the vehicles dictionary with the amount of ticks needed to travel. 
+            vehicle.entry_tick = tick
+            vehicle.remaining_ticks = self.get_travel_ticks()
+            
+            self.vehicles[vehicle.vehicle_id] = vehicle
+
+            return {
+                "type": "ACCEPTED",
+                "road_id": self.road_id
+            }
+
+    def get_travel_ticks(self):
+        if self.accident_active:
+            return self.base_travel_ticks * self.accident_multiplier
+
+        return self.base_travel_ticks
+
+    def set_accident(self, message):
+        active = message["active"]
+
+        with self.lock:
+            self.accident_active = active
+
+        return {
+            "type": "ACCIDENT_UPDATED",
+            "road_id": self.road_id,
+            "accident_active": active
+        }
