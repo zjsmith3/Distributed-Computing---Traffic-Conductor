@@ -50,6 +50,8 @@ class RoadNode:
                 "road_id": self.road_id,
                 "tick": tick
             }
+        elif message_type == "TRANSFER_VEHICLE":
+            return self.receive_vehicle(message)
 
         else:
             return {
@@ -108,7 +110,7 @@ class RoadNode:
     def attempt_sending_vehicle(self, vehicle_id, tick):
         #get the vehicle from the list
         with self.lock: 
-            sending_vehicle = self.vehicles.get[vehicle_id]
+            sending_vehicle = self.vehicles.get(vehicle_id)
 
             if sending_vehicle is None:
                 return
@@ -164,7 +166,38 @@ class RoadNode:
 
         # If rejected, do nothing with the vehicle. 
 
+    def receive_vehicle(self, message):
+        vehicle_data = message["vehicle"]
+        tick = message["tick"]
 
+        #we grab lock because we don't want to roads seeing a road has space and both sending a car that might make it over capacity.
+        with self.lock:
+            #check to see if the road as room, if not, communicate that road is full. 
+            if len(self.vehicles) >= self.capacity:
+                return {
+                    "type": "REJECTED_FULL",
+                    "road_id": self.road_id,
+                }
+
+            #TODO: CONFIRM THIS METHOD IS WRITTEN
+            vehicle = Vehicle.from_dictionary(vehicle_data)
+
+            #TODO: CONFIRM THE ARRIVAL METHOD WITH VEHICLE DEVELOPER, this function supposively tells the vehicle it moved.
+            vehicle.advance_route()
+
+            #sets up the vehicle into the vehicles dictionary with the amount of ticks needed to travel. 
+            vehicle.entry_tick = tick
+            vehicle.remaining_ticks = self.base_travel_ticks
+
+            self.vehicles[vehicle.vehicle_id] = vehicle
+
+            return {
+                "type": "ACCEPTED",
+                "road_id": self.road_id
+            }
+
+
+        
             
 
     
