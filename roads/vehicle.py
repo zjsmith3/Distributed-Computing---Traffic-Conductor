@@ -38,13 +38,12 @@ class Vehicle:
         if entry_tick < -1:
             raise ValueError("Invalid entry tick.")
         
-        self.id = vehicle_id
+        self.vehicle_id = vehicle_id
         self.origin = origin
         self.destination = destination
         self.route = list(route)
 
         self.route_index = route_index
-        self.entry_tick = entry_tick
 
         self.created_tick = created_tick
         self.entry_tick = entry_tick
@@ -60,7 +59,7 @@ class Vehicle:
     
     def to_dictionary(self):
         return {
-            "id": self.id,
+            "id": self.vehicle_id,
             "origin": self.origin,
             "destination": self.destination,
             "route": self.route,
@@ -83,7 +82,7 @@ class Vehicle:
             entry_tick = data["entry_tick"]
         )
     
-    def _str_(self):
+    def __str__(self):
         return(
             f"Vehicle {self.id}: "
             f"{self.get_current_road()} going to {self.destination}, "
