@@ -1,5 +1,5 @@
 import _json
-from vehicle import vehicle
+from vehicle import Vehicle
 
 def main():
 

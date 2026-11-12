@@ -1,4 +1,4 @@
-class vehicle:
+class Vehicle:
     def __init__(
             self,
             vehicle_id: int,
@@ -48,44 +48,45 @@ class vehicle:
 
         self.created_tick = created_tick
         self.entry_tick = entry_tick
+        self.remaining_ticks = remaining_ticks
 
-        def get_current_road(self):
-            return self.route[self.route_index]
-        
-        def get_next_road(self):
-            if self.route_index + 1 < len(self.route):
-                return self.route[self.route_index + 1 ]
-            return None
-        
-        def to_dictionary(self):
-            return {
-                "id": self.id,
-                "origin": self.origin,
-                "destination": self.destination,
-                "route": self.route,
-                "route_index": self.route_index,
-                "remaining_ticks": self.remaining_ticks,
-                "created_tick": self.created_tick,
-                "entry_tick": self.entry_tick
-            }
-        
-        @classmethod
-        def from_dictionary(cls, data):
-            return cls(
-                vehicle_id = data["id"],
-                origin = data["origin"],
-                destination = data["destination"],
-                route = data["route"],
-                route_index = data["route_index"],
-                remaining_ticks = data["remaining_ticks"],
-                created_tick = data["created_tick"],
-                entry_tick = data["entry_tick"]
-            )
-        
-        def _str_(self):
-            return(
-                f"Vehicle {self.id}: "
-                f"{self.get_current_road()} going to {self.destination}, "
-                f"Remaining Ticks: {self.remaining_ticks}"
-            )
+    def get_current_road(self):
+        return self.route[self.route_index]
+    
+    def get_next_road(self):
+        if self.route_index + 1 < len(self.route):
+            return self.route[self.route_index + 1 ]
+        return None
+    
+    def to_dictionary(self):
+        return {
+            "id": self.id,
+            "origin": self.origin,
+            "destination": self.destination,
+            "route": self.route,
+            "route_index": self.route_index,
+            "remaining_ticks": self.remaining_ticks,
+            "created_tick": self.created_tick,
+            "entry_tick": self.entry_tick
+        }
+    
+    @classmethod
+    def from_dictionary(cls, data):
+        return cls(
+            vehicle_id = data["id"],
+            origin = data["origin"],
+            destination = data["destination"],
+            route = data["route"],
+            route_index = data["route_index"],
+            remaining_ticks = data["remaining_ticks"],
+            created_tick = data["created_tick"],
+            entry_tick = data["entry_tick"]
+        )
+    
+    def _str_(self):
+        return(
+            f"Vehicle {self.id}: "
+            f"{self.get_current_road()} going to {self.destination}, "
+            f"Remaining Ticks: {self.remaining_ticks}"
+        )
         
