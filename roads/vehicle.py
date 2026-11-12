@@ -56,6 +56,13 @@ class Vehicle:
         if self.route_index + 1 < len(self.route):
             return self.route[self.route_index + 1 ]
         return None
+
+    # new content alert
+    def advance_route(self):
+        if self.route_index + 1 < len(self.route): 
+            self.route_index += 1
+            return True
+        return False
     
     def to_dictionary(self):
         return {
