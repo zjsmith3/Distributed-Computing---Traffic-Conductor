@@ -5,7 +5,7 @@ class vehicle:
             origin: str,
             destination: str,
             route: list,
-            created_tick: int,
+            created_tick: int = 0,
             remaining_ticks: int = 0,
             route_index: int = 0,
             entry_tick: int = -1
@@ -57,7 +57,7 @@ class vehicle:
                 return self.route[self.route_index + 1 ]
             return None
         
-        def to_dict(self):
+        def to_dictionary(self):
             return {
                 "id": self.id,
                 "origin": self.origin,
@@ -70,7 +70,7 @@ class vehicle:
             }
         
         @classmethod
-        def from_dict(cls, data):
+        def from_dictionary(cls, data):
             return cls(
                 vehicle_id = data["id"],
                 origin = data["origin"],
