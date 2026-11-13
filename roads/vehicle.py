@@ -91,7 +91,7 @@ class Vehicle:
     
     def __str__(self):
         return(
-            f"Vehicle {self.id}: "
+            f"Vehicle {self.vehicle_id}: "
             f"{self.get_current_road()} going to {self.destination}, "
             f"Remaining Ticks: {self.remaining_ticks}"
         )
