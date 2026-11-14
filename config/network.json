@@ -1,0 +1,30 @@
+
+{
+  "coordinator": {
+    "host": "127.0.0.1",
+    "port": 5000
+  },
+  "roads": {
+    "A": {
+      "host": "127.0.0.1",
+      "port": 5001,
+      "capacity": 10,
+      "base_travel_ticks": 3,
+      "connections": ["B", "C"]
+    },
+    "B": {
+      "host": "127.0.0.1",
+      "port": 5002,
+      "capacity": 8,
+      "base_travel_ticks": 4,
+      "connections": ["C"]
+    },
+    "C": {
+      "host": "127.0.0.1",
+      "port": 5003,
+      "capacity": 10,
+      "base_travel_ticks": 2,
+      "connections": []
+    }
+  }
+}
