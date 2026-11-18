@@ -1,12 +1,16 @@
 import threading
 from communication.protocol import send_request
+from communication.server import start_server
 from roads.vehicle import Vehicle
+
+#CREDIT: Created by Zachary Smith, intially finished on 11/10. 
 
 class RoadNode:
 
     def __init__(self, road_id, road_config, coordinator_config, road_config_list):
         #Information below is what defines the road node.
         self.road_id = road_id
+        self.host = road_config["host"]
         self.port = road_config["port"]
         self.capacity = road_config["capacity"]
         self.base_travel_ticks = road_config["base_travel_ticks"]
@@ -263,3 +267,12 @@ class RoadNode:
             "road_id": self.road_id,
             "accident_active": active
         }
+
+    def start(self):
+        print(f"Road {self.road_id} listening on part {self.port}")
+
+        start_server(
+            self.host,
+            self.port,
+            self.handle_message
+        )
