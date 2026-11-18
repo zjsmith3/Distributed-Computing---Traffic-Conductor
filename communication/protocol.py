@@ -1,6 +1,8 @@
 import json
 import socket
 
+#CREDIT: Created by Zachary Smith on 11/5
+
 #to send something through a TCP socket we have to format the data in a certain way. This function does that
 def encode_message(message): 
     json_string = json.dumps(message)
