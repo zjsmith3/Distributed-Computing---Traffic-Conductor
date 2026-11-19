@@ -2,6 +2,8 @@ import socket
 import threading
 from communication.protocol import receive_message, send_message
 
+#CREDIT: Created by Zachary Smith on 11/5 
+
 #This will start a server if given the host, port, and it's message handler argument, which is how the 
 #server will differ between different types of nodes. 
 def start_server(host, port, message_handler):
