@@ -1,0 +1,26 @@
+Traffic Conductor Coordinator Reliability Update
+Built against repository main commit: 7fcc1eecb021fbbf6ad7688dc16669a1ade30148
+
+REPLACE EXISTING FILES:
+  README.md
+  coordinator/coordinator.py
+  roads/road_node.py
+  roads/test_vehicle.py
+  communication/server.py
+  tests/test_vehicle_lifecycle.py
+
+ADD NEW FILES:
+  APPLY_CHANGES.md
+  PR_DESCRIPTION.md
+  OVERLAY_MANIFEST.txt
+  docs/COORDINATOR_API.md
+  tests/test_coordinator.py
+  tests/test_road_node.py
+  tests/test_server.py
+  tests/test_end_to_end_tcp.py
+  tests/test_vehicle.py
+  .github/workflows/tests.yml
+
+Existing project files such as config/network.json, config/config.py,
+communication/protocol.py, roads/vehicle.py, and ui/app.py are intentionally
+not included because this update does not need to replace them.
