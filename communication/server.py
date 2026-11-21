@@ -6,6 +6,8 @@ import threading
 
 from communication.protocol import receive_message, send_message
 
+#Server.py created by Zachary Smith 11/5
+#Server.py improved on by Het Petal 11/19
 
 def start_server(host, port, message_handler):
     """Listen for requests and give each connection its own handler thread."""
