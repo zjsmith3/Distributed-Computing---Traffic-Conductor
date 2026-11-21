@@ -1,29 +1,334 @@
-
 {
   "coordinator": {
     "host": "127.0.0.1",
     "port": 5000
   },
   "roads": {
-    "A": {
+    "R01": {
       "host": "127.0.0.1",
       "port": 5001,
-      "capacity": 10,
-      "base_travel_ticks": 3,
-      "connections": ["B", "C"]
+      "capacity": 6,
+      "base_travel_ticks": 2,
+      "connections": [
+        "R02",
+        "R03",
+        "R06"
+      ]
     },
-    "B": {
+    "R02": {
       "host": "127.0.0.1",
       "port": 5002,
       "capacity": 8,
-      "base_travel_ticks": 4,
-      "connections": ["C"]
+      "base_travel_ticks": 5,
+      "connections": [
+        "R03",
+        "R04",
+        "R07"
+      ]
     },
-    "C": {
+    "R03": {
       "host": "127.0.0.1",
       "port": 5003,
       "capacity": 10,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R04",
+        "R05",
+        "R08"
+      ]
+    },
+    "R04": {
+      "host": "127.0.0.1",
+      "port": 5004,
+      "capacity": 12,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R05",
+        "R06",
+        "R09"
+      ]
+    },
+    "R05": {
+      "host": "127.0.0.1",
+      "port": 5005,
+      "capacity": 15,
+      "base_travel_ticks": 4,
+      "connections": [
+        "R06",
+        "R07",
+        "R10"
+      ]
+    },
+    "R06": {
+      "host": "127.0.0.1",
+      "port": 5006,
+      "capacity": 18,
       "base_travel_ticks": 2,
+      "connections": [
+        "R07",
+        "R08",
+        "R11"
+      ]
+    },
+    "R07": {
+      "host": "127.0.0.1",
+      "port": 5007,
+      "capacity": 20,
+      "base_travel_ticks": 5,
+      "connections": [
+        "R08",
+        "R09",
+        "R12"
+      ]
+    },
+    "R08": {
+      "host": "127.0.0.1",
+      "port": 5008,
+      "capacity": 6,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R09",
+        "R10",
+        "R13"
+      ]
+    },
+    "R09": {
+      "host": "127.0.0.1",
+      "port": 5009,
+      "capacity": 8,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R10",
+        "R11",
+        "R14",
+        "R05"
+      ]
+    },
+    "R10": {
+      "host": "127.0.0.1",
+      "port": 5010,
+      "capacity": 10,
+      "base_travel_ticks": 4,
+      "connections": [
+        "R11",
+        "R12",
+        "R15"
+      ]
+    },
+    "R11": {
+      "host": "127.0.0.1",
+      "port": 5011,
+      "capacity": 12,
+      "base_travel_ticks": 2,
+      "connections": [
+        "R12",
+        "R13",
+        "R16"
+      ]
+    },
+    "R12": {
+      "host": "127.0.0.1",
+      "port": 5012,
+      "capacity": 15,
+      "base_travel_ticks": 5,
+      "connections": [
+        "R13",
+        "R14",
+        "R17"
+      ]
+    },
+    "R13": {
+      "host": "127.0.0.1",
+      "port": 5013,
+      "capacity": 18,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R14",
+        "R15",
+        "R18",
+        "R09"
+      ]
+    },
+    "R14": {
+      "host": "127.0.0.1",
+      "port": 5014,
+      "capacity": 20,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R15",
+        "R16",
+        "R19"
+      ]
+    },
+    "R15": {
+      "host": "127.0.0.1",
+      "port": 5015,
+      "capacity": 6,
+      "base_travel_ticks": 4,
+      "connections": [
+        "R16",
+        "R17",
+        "R20"
+      ]
+    },
+    "R16": {
+      "host": "127.0.0.1",
+      "port": 5016,
+      "capacity": 8,
+      "base_travel_ticks": 2,
+      "connections": [
+        "R17",
+        "R18",
+        "R21"
+      ]
+    },
+    "R17": {
+      "host": "127.0.0.1",
+      "port": 5017,
+      "capacity": 10,
+      "base_travel_ticks": 5,
+      "connections": [
+        "R18",
+        "R19",
+        "R22",
+        "R13"
+      ]
+    },
+    "R18": {
+      "host": "127.0.0.1",
+      "port": 5018,
+      "capacity": 12,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R19",
+        "R20",
+        "R23"
+      ]
+    },
+    "R19": {
+      "host": "127.0.0.1",
+      "port": 5019,
+      "capacity": 15,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R20",
+        "R21",
+        "R24"
+      ]
+    },
+    "R20": {
+      "host": "127.0.0.1",
+      "port": 5020,
+      "capacity": 18,
+      "base_travel_ticks": 4,
+      "connections": [
+        "R21",
+        "R22",
+        "R25"
+      ]
+    },
+    "R21": {
+      "host": "127.0.0.1",
+      "port": 5021,
+      "capacity": 20,
+      "base_travel_ticks": 2,
+      "connections": [
+        "R22",
+        "R23",
+        "R26",
+        "R17"
+      ]
+    },
+    "R22": {
+      "host": "127.0.0.1",
+      "port": 5022,
+      "capacity": 6,
+      "base_travel_ticks": 5,
+      "connections": [
+        "R23",
+        "R24",
+        "R27"
+      ]
+    },
+    "R23": {
+      "host": "127.0.0.1",
+      "port": 5023,
+      "capacity": 8,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R24",
+        "R25",
+        "R28"
+      ]
+    },
+    "R24": {
+      "host": "127.0.0.1",
+      "port": 5024,
+      "capacity": 10,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R25",
+        "R26",
+        "R29"
+      ]
+    },
+    "R25": {
+      "host": "127.0.0.1",
+      "port": 5025,
+      "capacity": 12,
+      "base_travel_ticks": 4,
+      "connections": [
+        "R26",
+        "R27",
+        "R30",
+        "R21"
+      ]
+    },
+    "R26": {
+      "host": "127.0.0.1",
+      "port": 5026,
+      "capacity": 15,
+      "base_travel_ticks": 2,
+      "connections": [
+        "R27",
+        "R28"
+      ]
+    },
+    "R27": {
+      "host": "127.0.0.1",
+      "port": 5027,
+      "capacity": 18,
+      "base_travel_ticks": 5,
+      "connections": [
+        "R28",
+        "R29"
+      ]
+    },
+    "R28": {
+      "host": "127.0.0.1",
+      "port": 5028,
+      "capacity": 20,
+      "base_travel_ticks": 3,
+      "connections": [
+        "R29",
+        "R30"
+      ]
+    },
+    "R29": {
+      "host": "127.0.0.1",
+      "port": 5029,
+      "capacity": 6,
+      "base_travel_ticks": 6,
+      "connections": [
+        "R30",
+        "R25"
+      ]
+    },
+    "R30": {
+      "host": "127.0.0.1",
+      "port": 5030,
+      "capacity": 8,
+      "base_travel_ticks": 4,
       "connections": []
     }
   }
