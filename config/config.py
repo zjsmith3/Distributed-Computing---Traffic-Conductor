@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+#created by Zach Smith 11/5
+
 #purpose of this script is to just get the network file where we house communication information for each road node. 
 
 config_path = Path(__file__).resolve().parent / "network.json" #makes it consistently run no matter where ya run the code from. 
