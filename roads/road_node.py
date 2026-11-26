@@ -5,6 +5,7 @@ import threading
 from communication.protocol import send_request
 from communication.server import start_server
 from roads.vehicle import Vehicle
+from user.routing import get_live_traffic, reroute_for_accident
 
 #Originally created by Zachary Smith 11/10. 
 #Code Edited by Het Patel 11/19
@@ -206,6 +207,74 @@ class RoadNode:
                 with self.lock:
                     self.vehicles.pop(vehicle_id, None)
             return
+
+        # Check for accidents before moving the vehicle
+        remaining_roads = vehicle_data["route"][vehicle_data["route_index"] + 1:]
+        accident_found = False
+
+        for road_id in remaining_roads:
+            road_info = self.road_config_list.get(road_id)
+
+            # Skip roads that are not in config
+            if road_info is None:
+                continue
+
+
+            try:
+                status = send_request(
+                    road_info["host"],
+                    road_info["port"],
+                    {"type": "GET_STATUS"}
+                )
+
+                if status.get("type") == "STATUS" and status.get("accident_active"):
+                    accident_found = True
+                    break
+
+            except (OSError, ConnectionError) as error:
+                print(f"Could not check accident on {road_id}: {error}")
+
+        # Check if other route is faster
+        if accident_found:
+            traffic = get_live_traffic(self.road_config_list)
+
+            new_route = reroute_for_accident(
+                vehicle_data["route"],
+                vehicle_data["route_index"],
+                self.road_config_list,
+                traffic
+            )
+
+            # Update the vehicle route
+            if new_route != vehicle_data["route"]:
+                rerouted = False
+
+                with self.lock:
+                    vehicle = self.vehicles.get(vehicle_id)
+
+                    if (vehicle is not None
+                            and vehicle.route == vehicle_data["route"]
+                            and vehicle.route_index == vehicle_data["route_index"]):
+                        vehicle.route = new_route
+                        vehicle_data = vehicle.to_dictionary()
+                        next_road_id = vehicle.get_next_road()
+                        rerouted = True
+
+                if rerouted:
+                    print(
+                        f"Vehicle {vehicle_id} rerouted on {self.road_id}: "
+                        f"{new_route}"
+                    )
+
+        # Get the latest vehicle data before transferring
+        with self.lock:
+            vehicle = self.vehicles.get(vehicle_id)
+
+            if vehicle is None:
+                return
+
+            vehicle_data = vehicle.to_dictionary()
+            next_road_id = vehicle.get_next_road()
 
         if next_road_id not in self.connections: #catching an error if the vehicle's next destination isn't an option.
             raise ValueError(

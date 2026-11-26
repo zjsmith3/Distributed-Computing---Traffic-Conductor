@@ -573,6 +573,8 @@ class Coordinator:
                 return {"type": "ACKNOWLEDGE", "vehicle_id": vehicle_id, "duplicate": True}
             self.completed_vehicles.add(vehicle_id)
 
+        print(f"Vehicle {vehicle_id} completed its journey.")
+
         return {"type": "ACKNOWLEDGE", "vehicle_id": vehicle_id, "duplicate": False}
 
     def spawn_vehicle(self, message):
