@@ -13,6 +13,7 @@ import time
 from communication.protocol import send_request
 from communication.server import start_server as run_tcp_server
 from config.config import load_network_file
+from user.routing import get_live_traffic, find_best_route
 
 
 class Coordinator:
@@ -701,10 +702,19 @@ class Coordinator:
             cars_needed = max(0, self.target_vehicle_count - active_cars)
 
         print(f"Active vehicles: {active_cars}; vehicles to add: {cars_needed}")
+
+        #if no cars needed, don't collect traffic info
+        if cars_needed == 0:
+            return
+
+        #collect live traffic info once for this batch of cars.
+        traffic = get_live_traffic(self.roads)
+
         for _ in range(cars_needed):
-            route = self.generate_temporary_route()
+            route = self.generate_vehicle_route(traffic)
+
             if not route:
-                print("Could not generate a valid route for another vehicle.")
+                print("could not generate a valid route for another vehicle.")
                 break
 
             vehicle = {
@@ -717,9 +727,14 @@ class Coordinator:
                 "entry_tick": -1,
             }
             response = self.spawn_vehicle({"road_id": route[0], "vehicle": vehicle})
+
             if not isinstance(response, dict) or response.get("type") != "ACCEPTED":
                 print(f"Vehicle spawn failed: {response}")
                 break
+
+            #update local traffic snapshot after successful spawn. 
+            traffic[route[0]]["vehicle_count"] += 1
+
             print(f"Spawned vehicle {response['vehicle_id']} on Road {route[0]}.")
 
     def generate_temporary_route(self):
@@ -740,6 +755,41 @@ class Coordinator:
             current_road = random.choice(available)
             route.append(current_road)
         return route
+
+    def generate_vehicle_route(self, traffic):
+        #find online roads that have room for another vehicle.
+        starting_roads = [
+            road_id for road_id, status in traffic.items()
+            if status["vehicle_count"] < status["capacity"]
+            and self.roads[road_id]["connections"]
+        ]
+
+        #shuffle starting roads
+        random.shuffle(starting_roads)
+
+        for start in starting_roads:
+
+            #select possible destinations but not the starting road. 
+            destinations = [
+                road_id for road_id in traffic
+                if road_id != start
+            ]
+
+            random.shuffle(destinations)
+
+            #attempt to find a valid route to a destination.
+            for destination in destinations:
+                result = find_best_route(
+                    start,
+                    destination,
+                    self.roads,
+                    traffic
+                )
+
+                if result is not None:
+                    route, estimated_time = result
+                    return route
+        return None
 
 
 def main():
