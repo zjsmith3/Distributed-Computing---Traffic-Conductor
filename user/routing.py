@@ -118,3 +118,56 @@ def find_best_route(start_road, destination_road, road_data, traffic_data=None):
                 )
 
     return None
+
+
+# Update the route if an accident makes another path faster
+def reroute_for_accident(route, route_index, road_data, traffic_data):
+    # Check if the route and index are valid
+    if not route or not 0 <= route_index < len(route):
+        return route
+
+    current_road = route[route_index]
+    destination = route[-1]
+    remaining_route = route[route_index:]
+
+    # Check if there is an accident on the remaining roads
+    accident_ahead = any(
+        traffic_data.get(road_id, {}).get("accident_active", False)
+        for road_id in remaining_route[1:]
+    )
+
+    if not accident_ahead:
+        return route
+
+    # Find another route using the current traffic information
+    best = find_best_route(
+        current_road, destination, road_data, traffic_data
+    )
+
+    if best is None:
+        return route
+
+    new_remaining, new_time = best
+
+    # Calculate the original route's travel time
+    old_time = 0
+
+    for road_id in remaining_route:
+        status = traffic_data.get(road_id)
+
+        if status is None:
+            old_time = float("inf")
+            break
+
+        old_time += calculate_travel_time(
+            status["travel_ticks"],
+            status["vehicle_count"],
+            status["capacity"]
+        )
+
+    # Only change the route if the new route is faster
+    if new_time >= old_time or new_remaining == remaining_route:
+        return route
+
+    # Keep the roads the vehicle has already traveled
+    return route[:route_index] + new_remaining
